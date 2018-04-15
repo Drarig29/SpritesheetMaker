@@ -45,8 +45,11 @@ namespace SpritesheetMaker {
         public static Rectangle FindMinRect(ref Bitmap[] images) {
             var rect = new Rectangle();
 
-            foreach (var img in images) {
-                var minRect = FindMinRect(img);
+            Console.CursorVisible = false;
+            Program.DrawTextProgressBar(0, images.Length - 1);
+
+            for (var i = 0; i < images.Length; i++) {
+                var minRect = FindMinRect(images[i]);
 
                 if (rect.IsEmpty) {
                     rect = minRect;
@@ -54,7 +57,10 @@ namespace SpritesheetMaker {
                 }
 
                 rect = Rectangle.Union(rect, minRect);
+                Program.DrawTextProgressBar(i + 1, images.Length);
             }
+
+            Console.CursorVisible = true;
 
             return rect;
         }

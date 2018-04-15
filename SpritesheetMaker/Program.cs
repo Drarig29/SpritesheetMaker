@@ -27,8 +27,10 @@ namespace SpritesheetMaker {
 
             bmp.Save(filename);
 
-            WriteLine("Spritesheet created!");
+            WriteLine("Spritesheet created!\n");
             WriteLine("Filename: " + filename);
+
+            ReadLine();
         }
 
         private static Bitmap MakeSpritesheet(IReadOnlyList<Bitmap> images, Rectangle rect) {
@@ -41,12 +43,30 @@ namespace SpritesheetMaker {
             using (var g = Graphics.FromImage(ret)) {
                 for (var j = 0; j < countY; j++) {
                     for (var i = 0; i < countX; i++) {
-                        g.DrawImage(images[j * countX + i].GetRegion(rect), i * rect.Width, j * rect.Height, rect.Width, rect.Height);
+                        g.DrawImage(images[j * countX + i].GetRegion(rect), i * rect.Width, j * rect.Height, rect.Width,
+                            rect.Height);
                     }
                 }
             }
 
             return ret;
+        }
+
+        public static void DrawTextProgressBar(int progress, int total) {
+            CursorLeft = 0;
+            Write("[");
+            CursorLeft = 4;
+            Write("%]");
+
+            var value = (int) (100 * ((double) progress / total));
+
+            if (progress < total) {
+                CursorLeft = 1;
+                Write(value);
+            } else {
+                CursorLeft = 0;
+                WriteLine($"[{value}%]");
+            }
         }
     }
 }
