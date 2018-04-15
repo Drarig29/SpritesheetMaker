@@ -34,9 +34,13 @@ namespace SpritesheetMaker {
                 new Rectangle(rect.Left, rect.Top, x - rect.Left, y - rect.Top).Correct());
         }
 
+        public static Bitmap Crop(Bitmap bitmap, Rectangle rect) {
+            return bitmap.Clone(rect, bitmap.PixelFormat);
+        }
+
         //https://codereview.stackexchange.com/questions/178660/determine-if-an-image-is-opaque-or-transparent
 
-        public static Rectangle FindMinRect(IEnumerable<Image> images) {
+        public static Rectangle FindMinRect(ref Bitmap[] images) {
             var rect = new Rectangle();
 
             foreach (var img in images) {
