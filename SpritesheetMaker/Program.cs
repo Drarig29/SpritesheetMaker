@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using static System.Console;
 
 namespace SpritesheetMaker {
 
@@ -11,13 +12,13 @@ namespace SpritesheetMaker {
         private static void Main(string[] files) {
             if (files == null || files.Length == 0) return;
 
+            WriteLine("Converting files to images...");
             var images = files.Select(f => new Bitmap(f)).ToArray();
+
+            WriteLine("Finding the smallest rectangle which contains the image and the least transparency...");
             var rect = ImageHelper.FindMinRect(ref images);
 
-            for (var i = 0; i < images.Length; i++) {
-                images[i] = ImageHelper.Crop(images[i], rect);
-            }
-
+            WriteLine("Making the spritesheet...");
             var bmp = MakeSpritesheet(images, rect);
             var dirName = Path.GetDirectoryName(files[0]);
 
@@ -26,8 +27,8 @@ namespace SpritesheetMaker {
 
             bmp.Save(filename);
 
-            Console.WriteLine($@"Le fichier {filename} a été créé.");
-            Console.ReadLine();
+            WriteLine("Spritesheet created!");
+            WriteLine("Filename: " + filename);
         }
 
         private static Bitmap MakeSpritesheet(IReadOnlyList<Bitmap> images, Rectangle rect) {
@@ -40,7 +41,7 @@ namespace SpritesheetMaker {
             using (var g = Graphics.FromImage(ret)) {
                 for (var j = 0; j < countY; j++) {
                     for (var i = 0; i < countX; i++) {
-                        g.DrawImage(images[j * countX + i], i * rect.Width, j * rect.Height, rect.Width, rect.Height);
+                        g.DrawImage(images[j * countX + i].GetRegion(rect), i * rect.Width, j * rect.Height, rect.Width, rect.Height);
                     }
                 }
             }
