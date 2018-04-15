@@ -9,34 +9,69 @@ namespace SpritesheetMaker {
 
     public static class Program {
 
-        private static void Main(string[] files) {
-            if (files == null || files.Length == 0) return;
+        private static void Main(string[] args) {
+            if (args == null || args.Length == 0) return;
 
-            WriteLine("Converting files to images...");
-            var images = files.Select(f => new Bitmap(f)).ToArray();
+            FileAttributes attr0 = 0; //impossible value
+
+            foreach (var arg in args) {
+                var attr = File.GetAttributes(arg);
+
+                if (attr0 == 0) {
+                    attr0 = attr;
+                    continue;
+                }
+
+                if (attr != attr0) {
+                    throw new ArgumentException("The selection has to be only files or folder, not both.");
+                }
+            }
+
+            //we know there are only folder or only files in args
+            if ((attr0 & FileAttributes.Directory) == FileAttributes.Directory) {
+                for (var i = 0; i < args.Length; i++) {
+                    ProcessImages(new DirectoryInfo(args[i]).GetFiles().Select(f => new Bitmap(f.FullName)).ToArray(),
+                        Path.Combine(
+                            Path.GetDirectoryName(args[i]) ??
+                            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                            Path.GetFileName(args[i]) + ".png"), i + 1);
+                }
+            } else {
+                var dirName = Path.GetDirectoryName(args[0]);
+
+                ProcessImages(args.Select(f => new Bitmap(f)).ToArray(),
+                    Path.Combine(dirName ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                        (Path.GetFileName(dirName) ?? "result") + ".png"));
+            }
+
+            ReadLine();
+        }
+
+        private static void ProcessImages(Bitmap[] images, string resultFile, int folderProgress = -1) {
+            if (folderProgress > -1) {
+                WriteLine($"Folder {folderProgress} ({Path.GetFileNameWithoutExtension(resultFile)}):\n");
+            }
 
             WriteLine("Finding the smallest rectangle which contains the image and the least transparency...");
             var rect = ImageHelper.FindMinRect(ref images);
 
             WriteLine("Making the spritesheet...");
-            var bmp = MakeSpritesheet(images, rect);
-            var dirName = Path.GetDirectoryName(files[0]);
+            var bmp = MakeSpritesheet(ref images, rect);
 
-            var filename = Path.Combine(dirName ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                (Path.GetFileName(dirName) ?? "result") + ".png");
-
-            bmp.Save(filename);
+            bmp.Save(resultFile);
 
             WriteLine("Spritesheet created!\n");
-            WriteLine("Filename: " + filename);
+            WriteLine("Filename: " + resultFile);
 
-            ReadLine();
+            if (folderProgress > -1) {
+                WriteLine("\n----------------------\n");
+            }
         }
 
-        private static Bitmap MakeSpritesheet(IReadOnlyList<Bitmap> images, Rectangle rect) {
-            var sqrt = Math.Sqrt(images.Count);
+        private static Bitmap MakeSpritesheet(ref Bitmap[] images, Rectangle rect) {
+            var sqrt = Math.Sqrt(images.Length);
             var countX = (int) Math.Ceiling(sqrt);
-            var countY = (images.Count - images.Count % countX) / countX + (sqrt < countX ? 1 : 0);
+            var countY = (images.Length - images.Length % countX) / countX + (sqrt < countX ? 1 : 0);
 
             var ret = new Bitmap(countX * rect.Width, countY * rect.Height);
 
