@@ -12,7 +12,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ListBox x:Name="FileList" Drop="FileList_OnDrop_Drop" AllowDrop="True"></ListBox>
-        <Button x:Name="MakeButton" Grid.Row="1" Margin="0 8 0 0" Click="MakeButton_OnClick">Make Spritesheet</Button>
+        <ListBox x:Name="FileList" Drop="FileList_OnDrop" AllowDrop="True"></ListBox>
+        <Button Grid.Row="1" Margin="0 8 0 0" Click="MakeButton_OnClick">Make Spritesheet</Button>
     </Grid>
 </Window>
