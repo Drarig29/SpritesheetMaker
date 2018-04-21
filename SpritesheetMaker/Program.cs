@@ -9,6 +9,9 @@ namespace SpritesheetMaker {
 
     public static class Program {
 
+        private static int _width;
+        private static int _height;
+
         private static void Main(string[] args) {
             if (args == null || args.Length == 0) return;
 
@@ -26,6 +29,12 @@ namespace SpritesheetMaker {
                     throw new ArgumentException("The selection has to be only files or folder, not both.");
                 }
             }
+
+            WriteLine("Width? (0 for auto)");
+            _width = Convert.ToInt32(ReadLine());
+
+            WriteLine("Height? (0 for auto)");
+            _height = Convert.ToInt32(ReadLine());
 
             //we know there are only folder or only files in args
             if ((attr0 & FileAttributes.Directory) == FileAttributes.Directory) {
@@ -55,6 +64,14 @@ namespace SpritesheetMaker {
             WriteLine("Finding the smallest rectangle which contains the image and the least transparency...");
             var rect = ImageHelper.FindMinRect(ref images);
 
+            if (_width == 0) {
+                _width = rect.Width;
+            }
+
+            if (_height == 0) {
+                _height = rect.Height;
+            }
+
             WriteLine("Making the spritesheet...");
             var bmp = MakeSpritesheet(ref images, rect);
 
@@ -73,13 +90,13 @@ namespace SpritesheetMaker {
             var countX = (int) Math.Ceiling(sqrt);
             var countY = (images.Length - images.Length % countX) / countX + (sqrt < countX ? 1 : 0);
 
-            var ret = new Bitmap(countX * rect.Width, countY * rect.Height);
+            var ret = new Bitmap(countX * _width, countY * _height);
 
             using (var g = Graphics.FromImage(ret)) {
                 for (var j = 0; j < countY; j++) {
                     for (var i = 0; i < countX; i++) {
-                        g.DrawImage(images[j * countX + i].GetRegion(rect), i * rect.Width, j * rect.Height, rect.Width,
-                            rect.Height);
+                        g.DrawImage(images[j * countX + i].GetRegion(rect), i * _width, j * _height, _width,
+                            _height);
                     }
                 }
             }
