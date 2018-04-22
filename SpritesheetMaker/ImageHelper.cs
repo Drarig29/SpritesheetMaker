@@ -53,6 +53,7 @@ namespace SpritesheetMaker {
 
                 if (rect.IsEmpty) {
                     rect = minRect;
+                    Program.DrawTextProgressBar(i + 1, images.Length);
                     continue;
                 }
 
@@ -91,8 +92,8 @@ namespace SpritesheetMaker {
                             rect = new Rectangle {
                                 X = x,
                                 Y = y,
-                                Width = 1,
-                                Height = 1
+                                Width = 0,
+                                Height = 0
                             };
                             continue;
                         }
@@ -104,9 +105,10 @@ namespace SpritesheetMaker {
 
             bitmap.UnlockBits(bitmapData);
 
-            if (!rect.IsEmpty) {
-                rect.Inflate(1, 1);
-            }
+            if (rect.IsEmpty) return rect;
+
+            rect.Width++;
+            rect.Height++;
 
             return rect;
         }

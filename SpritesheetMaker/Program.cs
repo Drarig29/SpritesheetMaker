@@ -72,7 +72,7 @@ namespace SpritesheetMaker {
                 _height = rect.Height;
             }
 
-            WriteLine("Making the spritesheet...");
+            WriteLine("\nMaking the spritesheet...");
             var bmp = MakeSpritesheet(ref images, rect);
 
             bmp.Save(resultFile);
