@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -87,15 +86,18 @@ namespace SpritesheetMaker {
 
         private static Bitmap MakeSpritesheet(ref Bitmap[] images, Rectangle rect) {
             var sqrt = Math.Sqrt(images.Length);
-            var countX = (int) Math.Ceiling(sqrt);
-            var countY = (images.Length - images.Length % countX) / countX + (sqrt < countX ? 1 : 0);
+            var columnCount = (int) Math.Ceiling(sqrt);
+            var lineCount = (images.Length - images.Length % columnCount) / columnCount + (sqrt < columnCount ? 1 : 0);
 
-            var ret = new Bitmap(countX * _width, countY * _height);
+            var ret = new Bitmap(columnCount * _width, lineCount * _height);
 
             using (var g = Graphics.FromImage(ret)) {
-                for (var j = 0; j < countY; j++) {
-                    for (var i = 0; i < countX; i++) {
-                        g.DrawImage(images[j * countX + i].GetRegion(rect), i * _width, j * _height, _width,
+                for (var j = 0; j < lineCount; j++) {
+                    for (var i = 0; i < columnCount; i++) {
+                        var curr = j * columnCount + i;
+                        if (curr >= images.Length) break;
+
+                        g.DrawImage(images[curr].GetRegion(rect), i * _width, j * _height, _width,
                             _height);
                     }
                 }
