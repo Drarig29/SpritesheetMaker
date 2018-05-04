@@ -87,7 +87,11 @@ namespace SpritesheetMaker {
         private static Bitmap MakeSpritesheet(ref Bitmap[] images, Rectangle rect) {
             var sqrt = Math.Sqrt(images.Length);
             var columnCount = (int) Math.Ceiling(sqrt);
-            var lineCount = (images.Length - images.Length % columnCount) / columnCount + (sqrt < columnCount ? 1 : 0);
+            var lineCount = (images.Length - images.Length % columnCount) / columnCount;
+
+            if (sqrt < columnCount && columnCount * lineCount < images.Length) {
+                lineCount++;
+            }
 
             var ret = new Bitmap(columnCount * _width, lineCount * _height);
 
